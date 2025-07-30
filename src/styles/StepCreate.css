@@ -6,13 +6,13 @@
   justify-content: center;
   align-items: flex-start;
   /* background-color: #f9fafb; */
-  width: 1000px;
+  width: 900px;
 }
 .textarea:focus {
-    outline: none;
-    border-color: #15a74b; 
-    box-shadow: 0 0 0 2px #15a74b; 
-  }
+  outline: none;
+  border-color: #15a74b;
+  box-shadow: 0 0 0 2px #15a74b;
+}
 
 .input-section,
 .output-section {
@@ -81,4 +81,57 @@
 
 .copy-button-converted:hover {
   background-color: #128735 !important; /* สีเขียวเข้มเวลาชี้เมาส์ */
+}
+
+@media (max-width: 1700px) {
+  .form-container {
+    flex-direction: column;
+    width: 100%;
+    padding: 16px;
+    width: 800px;
+  }
+  .textarea {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1400px) {
+  .form-container {
+    width: 650px;
+  }
+  .textarea {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1060px) {
+  .form-container {
+    width: 600px;
+  }
+
+  .textarea {
+    width: 100%;
+  }
+
+  .input-section,
+  .output-section {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .label {
+    font-size: 14px;
+  }
+
+  .textarea {
+    font-size: 14px;
+    min-height: 200px;
+  }
+
+  .convert-button,
+  .copy-button {
+    font-size: 14px;
+    padding: 8px;
+  }
 }
