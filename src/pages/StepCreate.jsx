@@ -2,7 +2,7 @@ import { useState } from "react";
 import "../styles/StepCreate.css";
 
 function StepCreate() {
-  const [mode, setMode] = useState("create-tc");
+  const [mode, setMode] = useState("create-number-step");
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
   const [converted, setConverted] = useState(false);
@@ -17,8 +17,8 @@ function StepCreate() {
   };
 
   const handleConvertClick = () => {
-    if (mode === "create-tc") {
-      createTC();
+    if (mode === "create-number-step") {
+      createNumber_Step();
     } else if (mode === "sort-number") {
       SortNumber();
     } else if (mode === "step-gen-x") {
@@ -32,14 +32,13 @@ function StepCreate() {
     setConverted(true);
   };
 
-  const createTC = () => {
+  const createNumber_Step = () => {
     const lines = inputText.split("\n");
-    const converted = lines
-      .map((line, index) => {
-        // ลบเลขนำหน้าที่มีอยู่แล้ว เช่น "1. ", "2. ", "10. "
-        const cleaned = line.replace(/^\d+\.\s*/, "");
-        return `${index + 1}. ${cleaned}`;
-      })
+
+    const filteredLines = lines.filter((line) => line.trim() !== ""); // ตัดบรรทัดว่างทั้งหมด
+
+    const converted = filteredLines
+      .map((line, index) => `${index + 1}. ${line.trim()}`) // ลำดับเลข และ trim ช่องว่าง
       .join("\n");
 
     setOutputText(converted);
@@ -47,26 +46,26 @@ function StepCreate() {
 
   const SortNumber = () => {
     const lines = inputText.split("\n");
-  
+
     const numberedLines = [];
     const positions = [];
-  
+
     // เก็บเฉพาะบรรทัดที่มีเลขนำหน้า
     lines.forEach((line, index) => {
       const match = line.match(/^(\d+)\.\s*(.*)$/);
       if (match) {
         numberedLines.push(match[2]); // เฉพาะเนื้อหา ไม่เอาเลขเก่า
-        positions.push(index);        // จำตำแหน่งไว้
+        positions.push(index); // จำตำแหน่งไว้
       }
     });
-  
+
     // สร้างบรรทัดใหม่ด้วยเลขเรียงลำดับ แล้วแทนที่ใน lines
     numberedLines.forEach((text, i) => {
       lines[positions[i]] = `${i + 1}. ${text}`;
     });
-  
+
     setOutputText(lines.join("\n"));
-  };  
+  };
 
   const Step_GenerateX = () => {
     const lines = inputText.split("\n");
@@ -129,8 +128,8 @@ function StepCreate() {
           onChange={handleModeChange}
           className="border p-2 rounded"
         >
-          <option value="create-tc">Create TC</option>
-          <option value="sort-number">Sort Number</option>
+          <option value="create-number-step">Create Number Step</option>
+          <option value="sort-number">Sort Number Step</option>
           <option value="step-gen-x">Generate X Step</option>
           <option value="expect-gen-x">Generate X Expect</option>
         </select>
