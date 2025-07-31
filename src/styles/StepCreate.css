@@ -42,6 +42,8 @@
   font-family: monospace;
   background-color: rgb(255, 255, 255);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* background-color: white; */
+  color: black;
 }
 
 .convert-button {
