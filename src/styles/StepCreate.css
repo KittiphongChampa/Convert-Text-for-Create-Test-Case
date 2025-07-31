@@ -87,6 +87,14 @@
   background-color: #128735 !important; /* สีเขียวเข้มเวลาชี้เมาส์ */
 }
 
+@media (prefers-color-scheme: dark) {
+  .textarea {
+    background-color: #1f2937; /* สีเทาเข้ม */
+    color: white;
+    border: 1px solid #444;
+  }
+}
+
 @media (max-width: 1700px) {
   .form-container {
     gap: 10px;
