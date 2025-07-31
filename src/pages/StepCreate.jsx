@@ -56,7 +56,6 @@ function StepCreate() {
     } else {
       result = "โหมดนี้ยังไม่รองรับ";
     }
-
     setOutputText(result);
     setConverted(true);
   };
