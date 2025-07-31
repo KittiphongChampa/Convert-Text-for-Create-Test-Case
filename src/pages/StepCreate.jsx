@@ -1,5 +1,20 @@
 import { useState } from "react";
 import "../styles/StepCreate.css";
+import {
+  For,
+  Portal,
+  Select,
+  Stack,
+  createListCollection,
+  Switch,
+  Button,
+} from "@chakra-ui/react";
+import { HiCheck, HiX } from "react-icons/hi";
+
+import { CreateNumber_Step } from "../lib/CreateNumber_Step";
+import { SortNumber } from "../lib/SortNumber";
+import { Step_GenerateX } from "../lib/Step_GenerateX";
+import { Expect_GenerateX } from "../lib/Expect_GenerateX";
 
 function StepCreate() {
   const [mode, setMode] = useState("create-number-step");
@@ -7,6 +22,7 @@ function StepCreate() {
   const [outputText, setOutputText] = useState("");
   const [converted, setConverted] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [toggleEnabled, setToggleEnabled] = useState(false);
 
   const handleModeChange = (e) => {
     const newMode = e.target.value;
@@ -14,99 +30,35 @@ function StepCreate() {
     // setInputText("");
     setOutputText("");
     setConverted(false);
+    setToggleEnabled(false);
   };
 
   const handleConvertClick = () => {
+    let result = "";
     if (mode === "create-number-step") {
-      createNumber_Step();
+      result = CreateNumber_Step(inputText);
     } else if (mode === "sort-number") {
-      SortNumber();
+      result = SortNumber(inputText);
     } else if (mode === "step-gen-x") {
-      Step_GenerateX();
+      try {
+        result = Step_GenerateX(inputText, toggleEnabled);
+      } catch (err) {
+        alert(err.message);
+        setOutputText("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      }
     } else if (mode === "expect-gen-x") {
-      Expect_GenerateX();
+      try {
+        result = Expect_GenerateX(inputText, toggleEnabled);
+      } catch (err) {
+        alert(err.message);
+        setOutputText("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      }
     } else {
-      // ถ้ามี mode อื่นๆ เพิ่มได้ที่นี่
-      setOutputText("โหมดนี้ยังไม่รองรับ");
+      result = "โหมดนี้ยังไม่รองรับ";
     }
+
+    setOutputText(result);
     setConverted(true);
-  };
-
-  const createNumber_Step = () => {
-    const lines = inputText.split("\n");
-
-    const filteredLines = lines.filter((line) => line.trim() !== ""); // ตัดบรรทัดว่างทั้งหมด
-
-    const converted = filteredLines
-      .map((line, index) => `${index + 1}. ${line.trim()}`) // ลำดับเลข และ trim ช่องว่าง
-      .join("\n");
-
-    setOutputText(converted);
-  };
-
-  const SortNumber = () => {
-    const lines = inputText.split("\n");
-
-    const numberedLines = [];
-    const positions = [];
-
-    // เก็บเฉพาะบรรทัดที่มีเลขนำหน้า
-    lines.forEach((line, index) => {
-      const match = line.match(/^(\d+)\.\s*(.*)$/);
-      if (match) {
-        numberedLines.push(match[2]); // เฉพาะเนื้อหา ไม่เอาเลขเก่า
-        positions.push(index); // จำตำแหน่งไว้
-      }
-    });
-
-    // สร้างบรรทัดใหม่ด้วยเลขเรียงลำดับ แล้วแทนที่ใน lines
-    numberedLines.forEach((text, i) => {
-      lines[positions[i]] = `${i + 1}. ${text}`;
-    });
-
-    setOutputText(lines.join("\n"));
-  };
-
-  const Step_GenerateX = () => {
-    const lines = inputText.split("\n");
-    let numbering = 0;
-
-    const output = lines.map((line) => {
-      // ตรวจสอบบรรทัดที่ขึ้นต้นด้วยเลขลำดับ เช่น 1.  หรือ 1.1.2.
-      if (/^\s*\d+(?:\.\d+)*\.?\s+/.test(line)) {
-        numbering++;
-        // ตัดเลขเดิมออก (เลข + จุด + เว้นวรรค)
-        const textWithoutNumber = line.replace(/^\s*\d+(?:\.\d+)*\.?\s+/, "");
-        // ดึงช่องว่างต้นบรรทัด (ถ้ามี)
-        const indentMatch = line.match(/^(\s*)/);
-        const indent = indentMatch ? indentMatch[1] : "";
-        // ประกอบบรรทัดใหม่
-        return `${indent}<x>.${numbering} ${textWithoutNumber}`;
-      } else {
-        // บรรทัดไม่ใช่เลขลำดับ ให้คงเดิม
-        return line;
-      }
-    });
-
-    const convertedText = output.join("\n");
-    setOutputText(convertedText);
-  };
-
-  const Expect_GenerateX = () => {
-    const lines = inputText.split("\n");
-
-    const output = lines.map((line) => {
-      // แปลงเฉพาะบรรทัดที่ขึ้นต้นด้วยเลขลำดับ เช่น 1., 4.1, 5.2.3
-      return line.replace(
-        /^(\s*)(\d+(?:\.\d+)*)(\.?)(\s+)/,
-        (match, indent, num, dot, space) => {
-          return `${indent}<x>.${num}${space}`;
-        }
-      );
-    });
-
-    const convertedText = output.join("\n");
-    setOutputText(convertedText);
   };
 
   const handleCopy = async () => {
@@ -119,6 +71,12 @@ function StepCreate() {
     }
   };
 
+  const clearText = () => {
+    setInputText("");
+    setOutputText("");
+    setConverted(false);
+  };
+
   return (
     <div className="p-6 space-y-4">
       <div>
@@ -126,7 +84,7 @@ function StepCreate() {
         <select
           value={mode}
           onChange={handleModeChange}
-          className="border p-2 rounded"
+          className="border p-2 rounded selectBtn"
         >
           <option value="create-number-step">Create Number Step</option>
           <option value="sort-number">Sort Number Step</option>
@@ -134,6 +92,21 @@ function StepCreate() {
           <option value="expect-gen-x">Generate X Expect</option>
         </select>
       </div>
+      {(mode === "step-gen-x" || mode === "expect-gen-x") && (
+        <div className="flex items-center space-x-2 togleButton">
+          <Switch.Root
+            checked={toggleEnabled}
+            onCheckedChange={(e) => setToggleEnabled(e.checked)}
+          >
+            <Switch.HiddenInput />
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+            <Switch.Label>เคาะ space 2 ครั้ง</Switch.Label>
+          </Switch.Root>
+        </div>
+      )}
+
       <div className="form-container">
         <div className="input-section">
           <label className="label">Original text</label>
@@ -167,6 +140,9 @@ function StepCreate() {
           </button>
         </div>
       </div>
+      <button className="clear-button" onClick={clearText}>
+        Clear Text
+      </button>
     </div>
   );
 }
