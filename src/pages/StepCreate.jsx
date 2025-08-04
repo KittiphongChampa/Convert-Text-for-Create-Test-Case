@@ -15,6 +15,8 @@ import { CreateNumber_Step } from "../lib/CreateNumber_Step";
 import { SortNumber } from "../lib/SortNumber";
 import { Step_GenerateX } from "../lib/Step_GenerateX";
 import { Expect_GenerateX } from "../lib/Expect_GenerateX";
+import { Reverse_Step } from "../lib/Reverse_Step";
+import { Reverse_Expect } from "../lib/Reverse_Expect";
 
 function StepCreate() {
   const [mode, setMode] = useState("create-number-step");
@@ -49,6 +51,20 @@ function StepCreate() {
     } else if (mode === "expect-gen-x") {
       try {
         result = Expect_GenerateX(inputText, toggleEnabled);
+      } catch (err) {
+        alert(err.message);
+        setOutputText("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      }
+    } else if (mode === "reverse-step") {
+      try {
+        result = Reverse_Step(inputText);
+      } catch (err) {
+        alert(err.message);
+        setOutputText("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      }
+    } else if (mode === "reverse-expect") {
+      try {
+        result = Reverse_Expect(inputText);
       } catch (err) {
         alert(err.message);
         setOutputText("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
@@ -89,6 +105,8 @@ function StepCreate() {
           <option value="sort-number">Sort Number Step</option>
           <option value="step-gen-x">Generate X Step</option>
           <option value="expect-gen-x">Generate X Expect</option>
+          <option value="reverse-step">Reverse Step</option>
+          <option value="reverse-expect">Reverse Expect</option>
         </select>
       </div>
       {(mode === "step-gen-x" || mode === "expect-gen-x") && (
